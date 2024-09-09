@@ -4,9 +4,9 @@ import { SignedIn, UserButton } from "@clerk/clerk-react";
 const RootLayout = () => {
   return (
     <div className="root-layout">
-      <header>
+      <header className="flex justify-between px-[4rem] py-[2rem] bg-[grey]">
         <Link to="/">
-          <h1>Navbar</h1>
+          <h1>GlintBot</h1>
         </Link>
         <div>
           <SignedIn>
