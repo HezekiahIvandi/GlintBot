@@ -7,7 +7,6 @@ import RootLayout from "./layouts/rootLayout/RootLayout";
 import DashboardLayout from "./layouts/dashboardLayout/DashboardLayout";
 import SignInPage from "./pages/auth/SignIn";
 import SignUpPage from "./pages/auth/SignUp";
-import { useEffect } from "react";
 
 import { ThemeProvider } from "@/components/theme-provider";
 const router = createBrowserRouter([

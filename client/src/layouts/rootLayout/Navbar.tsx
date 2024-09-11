@@ -4,7 +4,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 
 const Navbar = () => {
   return (
-    <header className="flex justify-between px-[4rem] py-[1.5rem] bg-primary-foreground items-center">
+    <header className="h-[80px] flex justify-between px-[3rem] py-[1rem] bg-primary-foreground items-center">
       <Link to="/">
         <h1 className="text-accent-foreground text-[1.3em]">GlintBot</h1>
       </Link>

@@ -1,7 +1,7 @@
 import { useAuth } from "@clerk/clerk-react";
 import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-
+import Sidebar from "./Sidebar";
 const DashboardLayout = () => {
   const { userId, isLoaded } = useAuth();
   const navigate = useNavigate();
@@ -14,9 +14,11 @@ const DashboardLayout = () => {
 
   if (!isLoaded) return "Loading...";
   return (
-    <div className="dashboard-layout">
-      <div className="menu">Menu</div>
-      <div className="content">
+    <div className="dashboard-layout h-full flex">
+      <div className="menu h-full">
+        <Sidebar />
+      </div>
+      <div className="content bg-muted w-full h-full px-[2rem] py-[2rem] rounded-[7px]">
         <Outlet />
       </div>
     </div>
