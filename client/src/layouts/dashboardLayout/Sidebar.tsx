@@ -18,7 +18,7 @@ const Sidebar = () => {
         <span className="text-[0.8em] text-muted-foreground ">
           RECENT CHATS
         </span>
-        <div className="text-[1em] flex flex-col ml-[0.5rem] h-auto">
+        <div className="text-[1em] flex flex-col ml-[0.5rem] h-auto mt-[7px]">
           <ChatList />
         </div>
       </div>

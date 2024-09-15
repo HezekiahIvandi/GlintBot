@@ -1,0 +1,12 @@
+.option {
+  border: 1px solid grey;
+  border-radius: 30px;
+  padding: 10px;
+  justify-items: center;
+  overflow-wrap: break-word;
+  width: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
