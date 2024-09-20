@@ -1,7 +1,9 @@
 import { useEffect, useRef } from "react";
 import "./Chat.css";
 import NewPrompt from "@/layouts/dashboardLayout/NewPrompt";
+import { IKImage } from "imagekitio-react";
 const ChatPage = () => {
+  const urlEndpoint = import.meta.env.VITE_IMAGE_KIT_ENDPOINT;
   return (
     <div className="chat-container h-full flex flex-col items-center relative">
       <div className="wrapper flex flex-col flex-1 w-full items-center overflow-scroll">
@@ -68,6 +70,7 @@ const ChatPage = () => {
           <div className="message">hello im AI</div>
           <div className="message user">hello im user</div>
           <div className="message">hello im AI</div>
+
           <NewPrompt />
         </div>
       </div>

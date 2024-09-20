@@ -1,5 +1,6 @@
 import NewPrompt from "@/layouts/dashboardLayout/NewPrompt";
 import "./Dashboard.css";
+
 const Dashboard = () => {
   return (
     <div className="flex flex-col items-center h-[100%] w-full">
