@@ -3,8 +3,12 @@ import { useEffect, useRef, useState } from "react";
 import UploadComp from "./Upload";
 import { IKImage } from "imagekitio-react";
 import model from "@/lib/gemini";
+import Markdown from "react-markdown";
+import { error } from "console";
 
 const NewPrompt = () => {
+  const [question, setQuestion] = useState<string>("");
+  const [ans, setAns] = useState<string>("");
   //importing env variables
   const urlEndpoint = import.meta.env.VITE_IMAGE_KIT_ENDPOINT;
   //Images state
@@ -14,30 +18,53 @@ const NewPrompt = () => {
     imageData: {
       filePath?: string;
     };
+    aiData: {
+      inlineData?: {
+        data: string;
+        mimeType: string;
+      };
+    };
   }
 
   const [img, setImg] = useState<ImageObjectType>({
     isLoading: false,
     error: "",
     imageData: {},
+    aiData: {},
   });
 
   //Auto stroll to latest chat
   const endRef: any = useRef(null);
   useEffect(() => {
     endRef.current.scrollIntoView({ behavior: "smooth" });
-  }, []);
+  }, [question, ans]);
 
-  const [question, setQuestion] = useState<string>("");
-  const [ans, setAns] = useState<string>("");
   //model request
   const add = async (text: string) => {
     setQuestion(text);
-    console.log(question);
-    const result = await model.generateContent(question);
-    const response = result.response.text();
-    setAns(response);
-    console.log(result.response.text());
+    console.log(text);
+
+    let content: any[];
+    if (img.aiData) {
+      content = [img.aiData, text];
+    } else {
+      content = [text];
+    }
+
+    try {
+      const result = await model.generateContent(content);
+      const response = result.response.text();
+      setAns(response);
+      setImg({
+        isLoading: false,
+        error: "",
+        imageData: {},
+        aiData: {},
+      });
+      console.log(result.response.text());
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const handleSubmit = async (e: any) => {
@@ -62,7 +89,11 @@ const NewPrompt = () => {
         />
       )}
       {question && <div className="message user">{question}</div>}
-      {ans && <div className="message">{ans}</div>}
+      {ans && (
+        <div className="message">
+          <Markdown>{ans}</Markdown>
+        </div>
+      )}
       <div ref={endRef} className="pb-[100px]" />;
       <div className="flex mt-[1rem] justify-center items-center absolute bottom-0 w-full">
         <form

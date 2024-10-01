@@ -1,3 +1,4 @@
+import { read } from "fs";
 import { IKContext, IKImage, IKUpload } from "imagekitio-react";
 import { Upload as UploadIcon } from "lucide-react";
 import { useRef } from "react";
@@ -30,8 +31,13 @@ interface ImageObjectType {
   imageData: {
     filePath?: string;
   };
+  aiData: {
+    inlineData?: {
+      data: string;
+      mimeType: string;
+    };
+  };
 }
-
 type SetImageFunction = React.Dispatch<React.SetStateAction<ImageObjectType>>;
 
 interface UploadCompProps {
@@ -52,9 +58,30 @@ const UploadComp: React.FC<UploadCompProps> = ({ setImg }) => {
     console.log("Progress", progress);
   };
 
-  const onUploadStart = (evt: any) => {
+  const onUploadStart = (evt: React.ChangeEvent<HTMLInputElement>) => {
     console.log("Start", evt);
-    setImg((prev) => ({ ...prev, isLoading: true }));
+
+    const file = evt.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setImg((prev) => ({
+        ...prev,
+        isLoading: true,
+        aiData: {
+          inlineData: {
+            data:
+              typeof reader.result === "string"
+                ? reader.result.split(",")[1]
+                : "",
+            mimeType: file.type,
+          },
+        },
+      }));
+    };
+    reader.readAsDataURL(file);
   };
 
   const ikUploadRef = useRef<HTMLInputElement>(null);

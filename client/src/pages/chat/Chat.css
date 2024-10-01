@@ -4,6 +4,11 @@
     max-width: 80%;
     align-self: flex-start;
     border-radius: 20px;
+
+    p,
+    li {
+      margin: 10px 0;
+    }
     &.user {
       background-color: rgb(61, 58, 58);
       align-self: flex-end;
