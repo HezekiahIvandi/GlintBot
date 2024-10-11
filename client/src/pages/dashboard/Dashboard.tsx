@@ -1,4 +1,4 @@
-import NewPrompt from "@/layouts/dashboardLayout/NewPrompt";
+import NewPrompt from "@/components/chatComponents/NewPrompt";
 import "./Dashboard.css";
 
 const Dashboard = () => {

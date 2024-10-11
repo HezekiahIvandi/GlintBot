@@ -4,21 +4,16 @@ import UploadComp from "./Upload";
 import { IKImage } from "imagekitio-react";
 import model from "@/lib/gemini";
 import Markdown from "react-markdown";
-import { error } from "console";
 
 const NewPrompt = () => {
-  const [question, setQuestion] = useState<string>("");
-  const [ans, setAns] = useState<string>("");
-  //importing env variables
-  const urlEndpoint = import.meta.env.VITE_IMAGE_KIT_ENDPOINT;
-  //Images state
+  //Variables's states
   interface ImageObjectType {
     isLoading: boolean;
     error: string;
     imageData: {
       filePath?: string;
     };
-    aiData: {
+    aiData?: {
       inlineData?: {
         data: string;
         mimeType: string;
@@ -32,6 +27,11 @@ const NewPrompt = () => {
     imageData: {},
     aiData: {},
   });
+  const [question, setQuestion] = useState<string>("");
+  const [ans, setAns] = useState<string>("");
+
+  //importing env variables
+  const urlEndpoint = import.meta.env.VITE_IMAGE_KIT_ENDPOINT;
 
   //Auto stroll to latest chat
   const endRef: any = useRef(null);
@@ -39,29 +39,53 @@ const NewPrompt = () => {
     endRef.current.scrollIntoView({ behavior: "smooth" });
   }, [question, ans]);
 
-  //model request
-  const add = async (text: string) => {
+  //Define model
+  const chat = model.startChat({
+    history: [
+      {
+        role: "user",
+        parts: [{ text: "Hello" }],
+      },
+      {
+        role: "model",
+        parts: [{ text: "Great to meet you. What would you like to know?" }],
+      },
+    ],
+  });
+  //<<---------------------------------- Functions --------------------------------------------->>//
+
+  //Ask model question
+  const askModel = async (text: string) => {
     setQuestion(text);
-    console.log(text);
+    console.log("Question: ", text);
 
     let content: any[];
-    if (img.aiData) {
+    if (img.aiData?.inlineData) {
+      //Question related to image upload
       content = [img.aiData, text];
     } else {
+      //Just a standalone question
       content = [text];
     }
 
     try {
-      const result = await model.generateContent(content);
-      const response = result.response.text();
-      setAns(response);
+      console.log("content: ", content);
+      const result = await chat.sendMessageStream(content);
+
+      // Print text as it comes in.
+      let text = "";
+      for await (const chunk of result.stream) {
+        const chunkText = chunk.text();
+        text += chunkText;
+        setAns(text);
+      }
+
       setImg({
         isLoading: false,
         error: "",
         imageData: {},
         aiData: {},
       });
-      console.log(result.response.text());
     } catch (e) {
       console.error(e);
     }
@@ -71,8 +95,13 @@ const NewPrompt = () => {
     e.preventDefault();
     const text = e.target.text.value;
     if (!text) return;
-    add(text);
+    e.target.text.value = "";
+    askModel(text);
   };
+
+  console.log("test", img.imageData);
+
+  //htmls
   return (
     <>
       {img.isLoading && <div className="message">Loading...</div>}
