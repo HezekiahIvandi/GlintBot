@@ -1,5 +1,5 @@
-import NewPrompt from "@/components/chatComponents/NewPrompt";
 import "./Dashboard.css";
+import DashboardPrompt from "@/components/chatComponents/DashboardPrompt";
 
 const Dashboard = () => {
   return (
@@ -22,7 +22,7 @@ const Dashboard = () => {
       </div>
       <div className="formContainer mt-auto w-full relative">
         <div>
-          <NewPrompt />
+          <DashboardPrompt/>
         </div>
       </div>
     </div>

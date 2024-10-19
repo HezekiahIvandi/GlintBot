@@ -1,4 +1,4 @@
-console.log("executing index.ts...");
+
 import express, { Express, Request, Response } from "express";
 import * as dotenv from "dotenv";
 import chatApi from "./api/chat-api";
