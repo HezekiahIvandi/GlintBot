@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { SignedIn, UserButton } from "@clerk/clerk-react";
 import { ModeToggle } from "@/components/mode-toggle";
 
 const Navbar = () => {
@@ -11,9 +10,7 @@ const Navbar = () => {
       <div className="flex gap-[20px] justify-between ">
         <ModeToggle />
         <div className="flex items-center">
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
+            {/* if not signedin show signin button */}
         </div>
       </div>
     </header>

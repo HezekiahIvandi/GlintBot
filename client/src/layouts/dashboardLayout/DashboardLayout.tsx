@@ -1,9 +1,12 @@
-import { useAuth } from "@clerk/clerk-react";
-import { useEffect } from "react";
+
+import { useEffect} from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import Sidebar from "../../components/chatComponents/Sidebar";
 const DashboardLayout = () => {
-  const { userId, isLoaded } = useAuth();
+  
+  const userId = false
+  const isLoaded = true;
+
   const navigate = useNavigate();
 
   useEffect(() => {

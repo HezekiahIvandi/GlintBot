@@ -2,6 +2,7 @@
 import express, { Express, Request, Response } from "express";
 import * as dotenv from "dotenv";
 import chatApi from "./api/chat-api";
+import authApi from "./api/auth"
 import ImageKit from "imagekit";
 import cors from "cors";
 import mongoose from "mongoose";
@@ -18,6 +19,7 @@ dotenv.config();
 
 //use apis
 app.use(chatApi);
+app.use(authApi);
 
 //connect to db
 const connect = async () => {

@@ -14,8 +14,14 @@ const imagekit = new ImageKit({
 });
 
 router.get("/api/v1/upload", (req: Request, res: Response) => {
-  const result = imagekit.getAuthenticationParameters();
-  res.send(result);
+  try{
+    const result = imagekit.getAuthenticationParameters();
+    res.send(result);
+  }
+  catch(e){
+    console.error("Error while uploading image: ", e);
+    res.status(500).json({error: "Image uploading is failed!"})
+  }
 });
 
 router.get("/", (req: Request, res: Response) => {
