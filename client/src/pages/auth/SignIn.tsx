@@ -3,27 +3,27 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useNavigate } from 'react-router-dom'
 
 const SignInPage = ()=> {
-  const navigate = useNavigate();
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string|null>(null);
   const [successMessage, setSuccessMessage] = useState<string|null>(null)
+  
   const handleSubmit = async(e: React.FormEvent) => {
     e.preventDefault()
     // Handle sign-in logic here
     try{
 
       const response = await fetch("http://localhost:3000/api/v1/signin", {
+        credentials: 'include',
         method: "POST",
         headers:{
           "Content-type": "Application/json"
         },
         body: JSON.stringify({
           email, password
-        })
+        }),
       });
 
       const data = await response.json()
@@ -43,9 +43,9 @@ const SignInPage = ()=> {
       setEmail("")
 
       //redirect
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 5000);
+      // setTimeout(() => {
+      //   navigate('/dashboard');
+      // }, 5000);
 
     }catch(e){
       setError(e instanceof Error ? e.message : 'An unexpected error occurred');

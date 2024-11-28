@@ -20,6 +20,7 @@ const SignUpPage = () => {
     // Handle sign-up logic here
     try{
       const response = await fetch("http://localhost:3000/api/v1/signup", {
+        credentials: 'include',
         method: "POST",
         headers:{
           "Content-type": "Application/json"

@@ -1,21 +1,27 @@
 
-import express, { Express, Request, Response } from "express";
+import express, { Express } from "express";
 import * as dotenv from "dotenv";
-import chatApi from "./api/chat-api";
-import authApi from "./api/auth"
-import ImageKit from "imagekit";
+import chatApi from "./api/routes/chatRoutes";
+import authApi from "./api/routes/authRoutes"
 import cors from "cors";
 import mongoose from "mongoose";
+import cookieParser from "cookie-parser"
+import deserializeUser from "./api/middleware/deserializeUser";
 
 //configurations
 const app: Express = express();
+dotenv.config();
+
+//middleware
 app.use(express.json());
+app.use(cookieParser())
 app.use(
   cors({
     origin: process.env.CLIENT_URL,
+    credentials: true
   })
 );
-dotenv.config();
+app.use(deserializeUser)
 
 //use apis
 app.use(chatApi);
