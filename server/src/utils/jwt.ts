@@ -1,12 +1,15 @@
 import jwt, { JwtPayload } from "jsonwebtoken"
 
-interface PayloadType{
+interface UserType{
     userId: string,
     username: string,
-    iat?: string
 }
-interface verifiedJwtType{
-    payload: JwtPayload | string | null,
+
+export interface PayloadType extends JwtPayload, UserType{
+}
+
+export interface VerifiedJwtType{
+    payload: PayloadType | null,
     expired: boolean
 }
 
@@ -18,9 +21,9 @@ if (!privateKey || !publicKey) {
 }
 
 //sign jwt
-export const signJWT = async(payload: PayloadType, expiresIn: string | number): Promise<string> =>{
+export const signJWT = async(userInfo: UserType, expiresIn: string | number): Promise<string> =>{
     try{
-        const token = jwt.sign(payload, privateKey, {algorithm: "RS256", expiresIn});
+        const token = jwt.sign(userInfo, privateKey, {algorithm: "RS256", expiresIn});
         return token;
     }catch(e){
         console.error("Error signing JWT: ", e);
@@ -31,11 +34,11 @@ export const signJWT = async(payload: PayloadType, expiresIn: string | number): 
 
 
 //verify jwt
-export const verifyJWT = async(token: string): Promise<verifiedJwtType> => {
+export const verifyJWT = async(token: string): Promise<VerifiedJwtType> => {
    try{
-    const decode = jwt.verify(token, publicKey)
-    return {payload: decode, expired: false};
-
+    const decodedPayload: PayloadType = jwt.verify(token, publicKey) as PayloadType
+    const verifiedJWT: VerifiedJwtType = {payload: decodedPayload, expired: false};
+    return verifiedJWT;
    }catch(e){
     if (e instanceof Error && (e.name === 'TokenExpiredError' || e.message.includes("jwt expired"))) {
         return { 

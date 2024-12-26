@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express"
-import { verifyJWT } from "../../utils/jwt";
-import { JwtPayload } from "jsonwebtoken";
+import { verifyJWT, PayloadType, VerifiedJwtType } from "../../utils/jwt";
 
 const deserializeUser = async(req: Request, res: Response, next: NextFunction)=>{
     try{
@@ -9,11 +8,18 @@ const deserializeUser = async(req: Request, res: Response, next: NextFunction)=>
             console.log("Token is null!");
             return next();
         }
-        console.log("Token found: ", accessToken)
-        const decode = await verifyJWT(accessToken);
-        console.log("Payload: ", decode.payload)
-        req.user = decode.payload
+        //verify token
+        const decoded: VerifiedJwtType = await verifyJWT(accessToken);
+        
+        if(!decoded.payload){
+            //if payload is null do something
+            return;
+        }; 
+        console.log("Token is found, Payload: ", decoded.payload)
+        const {userId, username} = decoded.payload;
+        req.user = {userId, username}
         return next();
+
     }catch(e){
         console.error(e);
         console.log("Token doesnt exist in cookies")

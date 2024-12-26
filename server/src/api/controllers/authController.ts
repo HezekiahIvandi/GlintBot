@@ -34,15 +34,16 @@ export const signInController = async(req: Request, res: Response)=>{
         const accessToken = await signJWT(userInfo, '5m');
 
         //store access token in cookie
-        res.cookie("accessToken",accessToken,{
-            maxAge: 5 * 60 * 1000 , //5 minute
+        res.cookie("accessToken", accessToken,{
+            maxAge: 30 * 60 * 1000 , //30 minute
             httpOnly: true,
             secure: true, 
         })
 
-        //verify access token
-        const decoded = await verifyJWT(accessToken)
-        res.status(200).json({message: "User info is correct!", payload: decoded.payload})
+        //verify token
+        const verify = await verifyJWT(accessToken);
+        
+        res.status(200).json({message: "Sign-in Successful!"})
 
     }catch(e){
         console.error("Error while logging in!", e);
@@ -64,4 +65,20 @@ export const logOutController = async(req: Request, res: Response)=>{
         console.error("Error while logging out: ", e);
         res.status(500).json({error: "Error while logging out."})
     }
+}
+
+
+//get me
+export const getCurrentUserController = async(req: Request, res: Response)=> {
+   try{
+    if(!req.user) {
+        return res.status(401).json({ error: 'User session is invalid' });
+    }
+    
+    return res.json({ userData: req.user, message: "User session is valid!"});
+   }
+   catch(e){
+    console.error("Error while checking user auth status: ", e);
+    res.status(500).json({error: "Something went wrong!"})
+   }
 }

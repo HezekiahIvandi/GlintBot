@@ -5,53 +5,27 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {useNavigate } from 'react-router-dom'
+import { useAuth } from '@/providers/AuthProvider'
+import toast from 'react-hot-toast'
 
 
 const SignUpPage = () => {
+  const {register, errorMsg, successMsg, isLoading} = useAuth();
   const [name, setName] = useState<string>('')
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
-  const [error, setError] = useState<string|null>(null)
-  const [successMessage, setSuccessMessage] = useState<string|null>(null)
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle sign-up logic here
-    try{
-      const response = await fetch("http://localhost:3000/api/v1/signup", {
-        credentials: 'include',
-        method: "POST",
-        headers:{
-          "Content-type": "Application/json"
-        },
-        body: JSON.stringify({username: name, email, password})
-      });
-
-      const data = await response.json();
-
-      if(!response.ok){
-        setError(data.error || "Sign-up went wrong!");
-        return;
-      }
-
-      //handle successfull signup 
-      setError(null)
-      setSuccessMessage('Signup successful!');
-      console.log(data);
-
-      //clear form
-      setName('')
-      setEmail('')
-      setPassword('')
-
-      //redirect
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 5000);
-    }catch(e){
-      setError(e instanceof Error? e.message : 'An unexpected error occurred')
-      console.error(e)
+    // Handle account registering logic here
+    const isRegisterSuccess = await register(name, email, password);
+    if(isRegisterSuccess){
+      setName("");
+      setEmail("");
+      setPassword("");
+      navigate("/sign-in");
+      toast.success("Registration successful! Please sign in",{position: "bottom-right"})
     }
   }
 
@@ -60,14 +34,14 @@ const SignUpPage = () => {
       <CardHeader>
         <CardTitle className="text-2xl font-bold text-center">Sign Up</CardTitle>
         {
-          error? (
+          errorMsg? (
             <div className=" text-[#ff0000] px-2 py-1 text-center relative">
-              {error}
+              {errorMsg}
             </div>
           ):
-          (successMessage? (
+          (successMsg? (
             <div className=" text-[#2afe2a] px-2 py-1 text-center relative">
-              {successMessage}
+              {successMsg}
             </div>
           )
             : <CardDescription className="text-center">Create an account to get started</CardDescription>)
@@ -109,7 +83,7 @@ const SignUpPage = () => {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
-          <Button type="submit" className="w-full">Sign Up</Button>
+          <Button type="submit" className="w-full">{isLoading? "Registering..." : "Sign Up"}</Button>
           <p className="text-sm text-center text-gray-600">
             Already have an account?{' '}
             <a href="/sign-in" className="text-primary hover:underline">
