@@ -1,11 +1,15 @@
 import jwt, { JwtPayload } from "jsonwebtoken"
 
-interface UserType{
+interface UserPayloadType{
     userId: string,
     username: string,
 }
 
-export interface PayloadType extends JwtPayload, UserType{
+interface SessionPayloadType{
+    sessionId: string
+}
+
+export interface PayloadType extends JwtPayload, UserPayloadType, SessionPayloadType{
 }
 
 export interface VerifiedJwtType{
@@ -21,9 +25,9 @@ if (!privateKey || !publicKey) {
 }
 
 //sign jwt
-export const signJWT = async(userInfo: UserType, expiresIn: string | number): Promise<string> =>{
+export const signJWT = async(payload: UserPayloadType | SessionPayloadType, expiresIn: string | number): Promise<string> =>{
     try{
-        const token = jwt.sign(userInfo, privateKey, {algorithm: "RS256", expiresIn});
+        const token = jwt.sign(payload, privateKey, {algorithm: "RS256", expiresIn});
         return token;
     }catch(e){
         console.error("Error signing JWT: ", e);
@@ -31,7 +35,6 @@ export const signJWT = async(userInfo: UserType, expiresIn: string | number): Pr
     }
   
 }
-
 
 //verify jwt
 export const verifyJWT = async(token: string): Promise<VerifiedJwtType> => {
@@ -41,6 +44,7 @@ export const verifyJWT = async(token: string): Promise<VerifiedJwtType> => {
     return verifiedJWT;
    }catch(e){
     if (e instanceof Error && (e.name === 'TokenExpiredError' || e.message.includes("jwt expired"))) {
+        console.log("accessToken is expired");
         return { 
             payload: null, 
             expired: true 

@@ -21,3 +21,19 @@ export const uploadImageController = (req: Request, res: Response) => {
       res.status(500).json({error: "Image uploading is failed!"})
     }
   }
+
+
+//get me
+export const getCurrentUserController = async(req: Request, res: Response)=> {
+  try{
+   if(!req.user) {
+       return res.status(401).json({ error: 'User session is invalid' });
+   }
+   
+   return res.json({ userData: req.user, message: "User session is valid!"});
+  }
+  catch(e){
+   console.error("Error while checking user auth status: ", e);
+   res.status(500).json({error: "Something went wrong!"})
+  }
+}

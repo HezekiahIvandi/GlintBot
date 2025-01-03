@@ -12,6 +12,7 @@ interface AuthContextType{
     login: (email: string, password:string)=> Promise<boolean>,
     logout: ()=> Promise<boolean>,
     clearMsg: ()=> void,
+    fetchWithTokenRefresh: (url: string, options: RequestInit) => Promise<Response>,
     isLoading: boolean,
     isAuthenticated: boolean,
     errorMsg: string | null,
@@ -31,7 +32,8 @@ const AuthContext = createContext<AuthContextType>({
     logout: async() =>false,
     login: async()=> false,
     register: async()=>false,
-    clearMsg: ()=> {}
+    clearMsg: ()=> {},
+    fetchWithTokenRefresh: async()=> new Response()
 });
 
 //auth provider
@@ -156,10 +158,59 @@ const AuthProvider = ({children}: AuthProviderProps) =>{
        
     }
 
+    
+    //Api wrapper (for auto token refreshment if accessToken is expired)
+    const fetchWithTokenRefresh = async(url: string, options: RequestInit):Promise<Response> =>{
+        try{
+            let response = await fetch(url,{
+                ...options,
+                credentials: "include"
+            }
+            );
+            
+            if(response.status === 401){
+                const data = await response.json();
+                console.log("401 ERROR: ", data.error)
+                if(data.code === "TOKEN_EXPIRED"){
+                    //handle token expiry
+                    console.log("Response back from server | accesstoken is expired | Refresh triggered");
+    
+                    //request a refreshment of access token
+                    const refreshRes = await fetch("http://localhost:3000/api/v1/refresh", {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "Content-type": "Application/json"
+                    }
+                    });
+    
+                    const refreshData = await refreshRes.json();
+                    if(!refreshRes.ok){
+                        console.log(refreshData.error)
+                        return response;
+                    };
+    
+                    //after successful refreshing new token
+                    console.log(refreshData.message);
+                    
+                    //retry original request
+                    response = await fetch(url, {
+                    ...options, 
+                    credentials: "include"
+                    });
+                }
+            }
+            return response
+        }catch(e){
+            throw e
+        }
+    }
+  
     //Function for checking user and mounting user to current session
     const checkAuthStatus = async function(){
         try{
-            const response = await fetch('http://localhost:3000/api/v1/me', {
+            //Using custom api call so that it can refresh token if expired
+            const response = await fetchWithTokenRefresh('http://localhost:3000/api/v1/me', {
                 method: "GET",
                 credentials: "include",        
                 headers: {
@@ -191,6 +242,7 @@ const AuthProvider = ({children}: AuthProviderProps) =>{
         logout,
         register,
         clearMsg,
+        fetchWithTokenRefresh,
         isLoading,
         errorMsg,
         successMsg,

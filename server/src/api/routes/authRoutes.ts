@@ -1,18 +1,11 @@
-import express, {Request, Response} from "express"
-import {logOutController, signInController, signUpController, getCurrentUserController} from "../controllers/authController"
+import express from "express"
+import {logOutController, refreshAccessTokenController, signInController, signUpController} from "../controllers/authController"
 const router = express.Router();
 
+//Those routes dont need deserializingUser middleware
 router.post("/api/v1/signup", signUpController)
 router.post("/api/v1/signin", signInController)
 router.delete("/api/v1/logout", logOutController)
-router.get("/api/v1/me", getCurrentUserController)
-router.get("/get/currentUserToken", async (req: Request, res: Response)=>{
-    try{
-        const user = req.user;
-        if(!user) return;
-        res.status(200).json({user})
-    }catch(e){
-        console.error(e);
-    }
-})
+router.post("/api/v1/refresh", refreshAccessTokenController);
+
 export default router

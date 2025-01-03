@@ -1,29 +1,22 @@
-import express from "express";
-import { uploadImageController } from "../controllers/chatController";
+import express, {Response, Request} from "express";
+import { getCurrentUserController, uploadImageController } from "../controllers/chatController";
+import deserializeUser from "../middleware/deserializeUser";
 
 const router = express.Router();
 
 
-router.get("/api/v1/upload", uploadImageController);
+router.get("/api/v1/upload", deserializeUser ,uploadImageController);
 
-// router.post("/api/v1/chat", (req: Request, res: Response)=>{
-//   try{
-//     const {message} = req.body;
-//     console.log(message);
 
-//     //
-//     if(ChatModel){
-//       console.log("ChatModel found");
-//     }
-//     if(userChatsHeader){
-//       console.log("userChatsHeader foundssss");
-//     }
-
-//     res.status(200).json({message: "Operation successfuls"});
-//   }catch(error){
-//     console.log(error);
-//     res.status(500).json({error: "Internal server error"});
-//   }
-// });
-
+//Other stuff
+router.get("/api/v1/me", deserializeUser, getCurrentUserController)
+router.get("/get/currentUserToken", deserializeUser, async (req: Request, res: Response)=>{
+    try{
+        const user = req.user;
+        if(!user) return;
+        res.status(200).json({user})
+    }catch(e){
+        console.error(e);
+    }
+})
 export default router;

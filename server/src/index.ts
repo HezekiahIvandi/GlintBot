@@ -21,7 +21,6 @@ app.use(
     credentials: true
   })
 );
-app.use(deserializeUser)
 
 //use apis
 app.use(chatApi);

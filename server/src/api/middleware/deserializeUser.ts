@@ -1,28 +1,38 @@
 import { NextFunction, Request, Response } from "express"
-import { verifyJWT, PayloadType, VerifiedJwtType } from "../../utils/jwt";
+import { verifyJWT,  VerifiedJwtType } from "../../utils/jwt";
 
 const deserializeUser = async(req: Request, res: Response, next: NextFunction)=>{
     try{
         const {accessToken} = req.cookies;
+        console.log("")
+        console.log("Middleware triggered: ");
+
         if(!accessToken){
-            console.log("Token is null!");
-            return next();
+            console.log("Access token null")
+            return next()
         }
+
         //verify token
         const decoded: VerifiedJwtType = await verifyJWT(accessToken);
         
+        if(decoded.expired){
+            //if token is expired
+            console.log("access token is expired: ",decoded )
+            return res.status(401).json({
+                error: "Access token expired",
+                code: "TOKEN_EXPIRED"
+            });
+        };
+        
         if(!decoded.payload){
-            //if payload is null do something
-            return;
-        }; 
-        console.log("Token is found, Payload: ", decoded.payload)
+            return next();
+        }
         const {userId, username} = decoded.payload;
         req.user = {userId, username}
         return next();
 
     }catch(e){
         console.error(e);
-        console.log("Token doesnt exist in cookies")
         return next();
     }
 }
